@@ -7,7 +7,7 @@ resource "aws_iam_group_membership" "iam_group_members" {
   users = var.devops_users
 }
 resource "aws_iam_policy" "bucket_policy" {
-  name = "${var.chart_name}-policy"
+  name   = "${var.chart_name}-policy"
   policy = <<POLICY
 {
   "Version": "2012-10-17",

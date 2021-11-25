@@ -3,7 +3,7 @@ resource "aws_s3_bucket" "charts_bucket" {
   acl    = "private"
 
   tags = {
-    Name        = var.chart_name
+    Name = var.chart_name
   }
 }
 
