@@ -1,0 +1,24 @@
+{
+  "name": "node-app",
+  "version": "1.0.0",
+  "repository": {
+    "url": ""
+  },
+  "description": "nodejs app for swoom",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint main.js",
+    "start": "node main.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "aws-sdk": "^2.1035.0"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0"
+  }
+}

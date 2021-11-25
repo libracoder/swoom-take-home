@@ -1,0 +1,7 @@
+replicaCount: 1
+app_name: node-app
+service_port: 3000
+image:
+  repository: node-app
+  port: 3000
+  pullPolicy: Never

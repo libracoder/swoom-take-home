@@ -1,0 +1,41 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{.Values.app_name}}
+spec:
+  selector:
+    matchLabels:
+      app:  {{.Values.app_name}}
+  replicas: {{.Values.replicaCount}}
+  template:
+    metadata:
+      labels:
+        app: {{.Values.app_name}}
+    spec:
+      containers:
+        - name: {{.Values.app_name}}-container
+          image: {{ .Values.image.repository }}
+          ports:
+            - containerPort: {{.Values.image.port}}
+          imagePullPolicy: {{.Values.image.pullPolicy}}
+          env:
+            - name: "AWS_REGION"
+              valueFrom:
+                secretKeyRef:
+                  key:  AWS_REGION
+                  name: {{ .Release.Name }}
+            - name: "AWS_ACCESS_KEY_ID"
+              valueFrom:
+                secretKeyRef:
+                  key:  AWS_ACCESS_KEY_ID
+                  name: {{ .Release.Name }}
+            - name: "AWS_SECRET_ACCESS_KEY"
+              valueFrom:
+                secretKeyRef:
+                  key:  AWS_SECRET_ACCESS_KEY
+                  name: {{ .Release.Name }}
+            - name: "BUCKET_NAME"
+              valueFrom:
+                secretKeyRef:
+                  key:  BUCKET_NAME
+                  name: {{ .Release.Name }}
