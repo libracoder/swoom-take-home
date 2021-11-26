@@ -61,16 +61,7 @@ jobs:
           aws s3 ls swoom-helm-charts-repo
           helm repo add swoom-repo s3://swoom-helm-charts-repo
           helm s3 push ./helm/${{ env.APP_NAME }}-${{env.SWOOM_CHART_VERSION}}.tgz swoom-repo
-#      - name: Upload Chart to bucket
-#        uses: zdurham/s3-upload-github-action@master
-#        with:
-#          args: --acl public-read
-#        env:
-#          FILE: ./helm/${{ env.APP_NAME }}-${{env.SWOOM_CHART_VERSION}}.tgz
-#          S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
-#          S3_KEY: ${{ env.APP_NAME }}-${{env.SWOOM_CHART_VERSION}}.tgz
-#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
 
 
 
