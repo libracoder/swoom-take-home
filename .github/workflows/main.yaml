@@ -1,0 +1,76 @@
+name: Deploy to S3 Bucket
+on:
+  push:
+    branches:
+      - main
+env:
+  AWS_REGION: eu-west-2
+  APP_NAME: swoom-chart
+  AWS_S3_BUCKET: swoom-helm-charts-repo
+  HELM_BINARY_FILE_NAME: helm-v3.7.1-linux-amd64.tar.gz
+defaults:
+  run:
+    shell: bash
+jobs:
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+      contents: read
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Switch to Helm Folder and Zip Chart
+        run: |
+          cd helm
+          sudo apt-get install tree
+          tree
+          uname -m
+          wget https://get.helm.sh/${{env.HELM_BINARY_FILE_NAME}}
+          mkdir _helm
+          tar -xzf ${{env.HELM_BINARY_FILE_NAME}} -C _helm
+          mv _helm/linux-amd64/helm /usr/local/bin/helm
+          tree
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: eu-west-2
+      - name: setup python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.8
+      - name: Install S3 Plugin
+        run: |
+          pip install awscli
+          helm plugin install https://github.com/hypnoglow/helm-s3.git
+      - name: Export Swoom Version to File
+        run: |
+          cd helm
+          python -v
+          pip install bios
+          python get_chart_version.py
+          helm package ./swoom-chart
+          tree
+          export verion_no=$(cat ./SWOOM_CHART_VERSION.txt)
+          echo "SWOOM_CHART_VERSION=$verion_no" >> $GITHUB_ENV
+      - name: Helm Push
+        run: |
+          aws s3 ls swoom-helm-charts-repo
+          helm repo add swoom-repo s3://swoom-helm-charts-repo
+          helm s3 push ./helm/${{ env.APP_NAME }}-${{env.SWOOM_CHART_VERSION}}.tgz swoom-repo
+#      - name: Upload Chart to bucket
+#        uses: zdurham/s3-upload-github-action@master
+#        with:
+#          args: --acl public-read
+#        env:
+#          FILE: ./helm/${{ env.APP_NAME }}-${{env.SWOOM_CHART_VERSION}}.tgz
+#          S3_BUCKET: ${{ env.AWS_S3_BUCKET }}
+#          S3_KEY: ${{ env.APP_NAME }}-${{env.SWOOM_CHART_VERSION}}.tgz
+#          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+#          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
+
+
